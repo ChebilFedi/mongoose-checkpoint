@@ -45,13 +45,17 @@ router.get('/favorite/:food', (req, res) => {
 })
 
 
-router.put('/user/:name', (req, res) => {
+router.route('/user/:name').put ((req, res) => {
     Person.findOneAndUpdate({ name: req.params.name }, { age: 20 }, { new: true })
         .then(person => res.send(person))
         .catch(err => console.log(err.message))
 }).delete((req, res) => {
-    Person.remove({ name: req.params.id })
-        .then(res.send({ msg: "successfully removed " }))
+    Person.remove({ name: req.params.name})
+        .then(x => {
+            Person.find()
+                .then(users => res.json({users, affected: x.deletedCount}))
+                .catch(err => console.log(err.message))
+        })
         .catch(err => console.log(err.message))
 })
 
